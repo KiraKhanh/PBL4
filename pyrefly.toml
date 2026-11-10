@@ -1,0 +1,8 @@
+# Pyrefly configuration for PBL4 Network IDS
+preset = "off"
+
+project-includes = [
+    "**/*.py*",
+]
+
+python-interpreter-path = ".venv/Scripts/python.exe"

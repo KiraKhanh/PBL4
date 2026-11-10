@@ -1,0 +1,46 @@
+{
+  "capture": {
+    "interface": "\\Device\\NPF_Loopback",
+    "bpf_filter": "",
+    "max_queue_size": 10000
+  },
+  "detection": {
+    "time_window_seconds": 5.0,
+    "port_scan": {
+      "enabled": true,
+      "distinct_ports_threshold": 20,
+      "severity": "HIGH"
+    },
+    "syn_flood": {
+      "enabled": true,
+      "syn_rate_threshold": 100,
+      "severity": "HIGH"
+    },
+    "icmp_flood": {
+      "enabled": true,
+      "icmp_rate_threshold": 50,
+      "severity": "MEDIUM"
+    },
+    "udp_flood": {
+      "enabled": true,
+      "udp_rate_threshold": 80,
+      "severity": "MEDIUM"
+    }
+  },
+  "alert": {
+    "cooldown_seconds": 10.0,
+    "rate_limit_per_minute": 60
+  },
+  "logging": {
+    "log_dir": "logs",
+    "max_bytes_per_file": 5242880,
+    "backup_count": 5,
+    "retention_days": 90,
+    "max_total_dir_size_mb": 100
+  },
+  "dashboard": {
+    "host": "127.0.0.1",
+    "port": 5000,
+    "update_interval_ms": 2000
+  }
+}

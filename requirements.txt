@@ -1,0 +1,6 @@
+# PBL4 Network Intrusion Detection System (IDS)
+# Python 3.12+ dependencies
+
+scapy>=2.5.0
+flask>=3.0.0
+pytest>=8.0.0
