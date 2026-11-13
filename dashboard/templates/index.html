@@ -3,584 +3,726 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PBL4 NIDS - Enterprise Network Intrusion Detection System</title>
-    <meta name="description" content="Hệ thống giám sát và phát hiện xâm nhập mạng NIDS thời gian thực trên Windows 11">
+    <title>PBL4 NIDS — Enterprise Security Operations Center</title>
+    <meta name="description" content="Hệ thống phát hiện xâm nhập mạng cục bộ dựa trên luật (Rule-based NIDS) trên Windows 11">
     
     <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
-    <!-- Custom Modern CSS -->
+    <!-- Minimal Enterprise SOC CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="app-layout">
+    <div class="soc-app-shell">
         <!-- ================================================================= -->
-        <!-- 1. Executive Top Header                                            -->
+        <!-- 1. Enterprise Sidebar Navigation (Fixed 240px)                    -->
         <!-- ================================================================= -->
-        <header class="executive-header">
-            <div class="header-brand">
-                <div class="shield-badge">
-                    <span class="radar-ping"></span>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <circle cx="12" cy="11" r="3"/>
-                    </svg>
-                </div>
-                <div class="brand-info">
-                    <div class="brand-title-row">
-                        <span class="brand-title">PBL4 NIDS</span>
-                        <span class="brand-version">ENTERPRISE v2.4</span>
-                    </div>
-                    <span class="brand-desc">Hệ thống Giám sát & Phát hiện Xâm nhập Mạng cục bộ</span>
-                </div>
-            </div>
-
-            <!-- Central Status Indicator -->
-            <div class="header-status">
-                <div class="status-pill" id="statusPillContainer">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span class="status-text" id="statusText">STOPPED</span>
-                </div>
-            </div>
-
-            <!-- Engine & Card Controls -->
-            <div class="header-controls">
-                <div class="iface-picker">
-                    <div class="picker-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
-                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+        <aside class="soc-sidebar">
+            <div class="sidebar-header">
+                <div class="brand-row">
+                    <div class="brand-icon-box">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>
-                        <span>Card mạng:</span>
                     </div>
-                    <select id="interfaceSelect" class="custom-select iface-select" title="Chọn giao diện card mạng cần giám sát">
-                        <option value="">Đang nạp card mạng...</option>
-                    </select>
+                    <div class="brand-title-wrap">
+                        <span class="brand-title">PBL4 NIDS</span>
+                        <span class="brand-tag">v2.4</span>
+                    </div>
                 </div>
 
-                <div class="engine-btn-group">
-                    <button id="btnStart" class="btn btn-emerald" title="Bắt đầu bắt gói tin và phân tích mạng">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <div class="sidebar-status-pill">
+                    <span class="status-indicator-dot" id="statusDot"></span>
+                    <span class="status-indicator-text" id="statusText">STOPPED</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav">
+                <span class="nav-section-label">Giám sát & Phân tích</span>
+                
+                <button class="nav-item active" data-view="view-overview">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Tổng quan (Overview)</span>
+                </button>
+
+                <button class="nav-item" data-view="view-traffic">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    <span>Lưu lượng mạng</span>
+                </button>
+
+                <button class="nav-item" data-view="view-alerts">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    </svg>
+                    <span>Cảnh báo xâm nhập</span>
+                    <span class="badge-count" id="alertTabCount">0</span>
+                </button>
+
+                <button class="nav-item" data-view="view-logs">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    <span>Nhật ký hệ thống</span>
+                </button>
+
+                <button class="nav-item" data-view="view-storage">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                    </svg>
+                    <span>Quản lý tệp Log</span>
+                </button>
+
+                <span class="nav-section-label" style="margin-top: 10px;">Xác minh & Quản trị</span>
+
+                <button class="nav-item" data-view="view-simulation">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>Phòng kiểm thử (Lab)</span>
+                </button>
+
+                <button class="nav-item" data-view="view-settings">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Cấu hình & Ngưỡng</span>
+                </button>
+            </nav>
+
+            <!-- Sidebar Footer: Health status -->
+            <div class="sidebar-footer">
+                <div class="queue-health-box">
+                    <div class="queue-health-top">
+                        <span>Hàng đợi: <strong id="valQueuePercent" class="tabular-nums">0%</strong></span>
+                        <span id="valQueueRaw" class="tabular-nums">0 / 10,000</span>
+                    </div>
+                    <div class="queue-progress-track">
+                        <div class="queue-progress-fill" id="queueProgressBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ================================================================= -->
+        <!-- 2. Main Workstation Shell                                         -->
+        <!-- ================================================================= -->
+        <div class="soc-main">
+            <!-- Top Compact Action Bar (50px) -->
+            <header class="top-action-bar">
+                <div class="view-breadcrumb">
+                    <span class="crumb-root">NIDS</span>
+                    <span>/</span>
+                    <span id="currentViewTitle">Tổng quan (Overview)</span>
+                </div>
+
+                <div class="topbar-actions">
+                    <!-- Interface Picker -->
+                    <div class="interface-picker-group">
+                        <span class="picker-caption">Card:</span>
+                        <select id="interfaceSelect" class="select-flat" title="Chọn card mạng">
+                            <option value="">Đang nạp card mạng...</option>
+                        </select>
+                    </div>
+
+                    <!-- Throughput Tag -->
+                    <div class="throughput-chip">
+                        <span class="chip-dot"></span>
+                        <span id="valThroughput" class="tabular-nums">0.0 pps</span>
+                    </div>
+
+                    <!-- Engine Controls -->
+                    <button id="btnStart" class="btn-soc btn-success" title="Khởi động giám sát card mạng">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                             <polygon points="5 3 19 12 5 21 5 3"></polygon>
                         </svg>
-                        <span>Start IDS</span>
+                        <span>Start</span>
                     </button>
-                    <button id="btnStop" class="btn btn-rose" disabled title="Tạm dừng giám sát">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    
+                    <button id="btnStop" class="btn-soc btn-danger" disabled title="Dừng giám sát">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                             <rect x="6" y="6" width="12" height="12"></rect>
                         </svg>
-                        <span>Stop IDS</span>
+                        <span>Stop</span>
                     </button>
-                    <button id="btnReset" class="btn btn-ghost" title="Đặt lại bộ đếm số liệu và làm sạch bảng">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+                    <button id="btnReset" class="btn-soc btn-outline" title="Đặt lại bộ đếm số liệu">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
                             <path d="M3 3v5h5"></path>
                         </svg>
                         <span>Reset</span>
                     </button>
                 </div>
-            </div>
-        </header>
+            </header>
 
-        <!-- ================================================================= -->
-        <!-- 2. Security Simulation & Attack Verification Studio                -->
-        <!-- ================================================================= -->
-        <section class="simulation-dock">
-            <div class="dock-header">
-                <div class="dock-tag">
-                    <span class="live-dot-pulse"></span>
-                    <span class="dock-tag-text">ATTACK SIMULATION STUDIO</span>
-                </div>
-                <div class="dock-title-group">
-                    <h2>Trung tâm Mô phỏng & Kiểm thử Xâm nhập</h2>
-                    <span class="dock-subtext">Phát lưu lượng thật có kiểm soát tới 127.0.0.1 để kiểm chứng tức thời 4 luật phát hiện</span>
-                </div>
-            </div>
-
-            <div class="simulation-cards-row">
-                <!-- Trigger 1: Port Scan -->
-                <button id="btnSimScan" class="sim-card card-purple" title="Quét 25 cổng TCP ngẫu nhiên">
-                    <div class="sim-card-top">
-                        <div class="sim-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <circle cx="12" cy="12" r="6"></circle>
-                                <circle cx="12" cy="12" r="2"></circle>
-                            </svg>
+            <!-- ============================================================= -->
+            <!-- 3. View Viewport (Single-Page Switcher)                        -->
+            <!-- ============================================================= -->
+            <main class="view-viewport">
+                <!-- --------------------------------------------------------- -->
+                <!-- VIEW 1: TỔNG QUAN (OVERVIEW)                               -->
+                <!-- --------------------------------------------------------- -->
+                <section class="soc-view active" id="view-overview">
+                    <!-- KPI Metrics Strip (4 Tiles) -->
+                    <div class="kpi-strip">
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-top">
+                                <span class="kpi-label">Gói tin quan sát</span>
+                                <span class="kpi-tag tag-teal">Traffic</span>
+                            </div>
+                            <div class="kpi-value-row">
+                                <span class="kpi-big-num tabular-nums" id="valTotalPackets">0</span>
+                            </div>
+                            <div class="kpi-tile-bottom">
+                                <span>Tốc độ xử lý:</span>
+                                <strong id="valThroughputSub" class="tabular-nums">0.0 pps</strong>
+                            </div>
                         </div>
-                        <span class="sim-sev-tag sev-high">HIGH</span>
-                    </div>
-                    <div class="sim-card-body">
-                        <span class="sim-name">TCP Port Scan</span>
-                        <span class="sim-desc">Quét 25 cổng đích trong 5s</span>
-                    </div>
-                </button>
 
-                <!-- Trigger 2: SYN Flood -->
-                <button id="btnSimSyn" class="sim-card card-crimson" title="Bơm dồn dập 120 gói TCP SYN tới cổng 80">
-                    <div class="sim-card-top">
-                        <div class="sim-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                            </svg>
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-top">
+                                <span class="kpi-label">Cảnh báo xâm nhập</span>
+                                <span class="kpi-tag tag-critical">Threats</span>
+                            </div>
+                            <div class="kpi-value-row">
+                                <span class="kpi-big-num tabular-nums" style="color: #f85149;" id="valTotalAlerts">0</span>
+                            </div>
+                            <div class="kpi-tile-bottom">
+                                <span id="valSuppressedAlerts" class="tabular-nums">0 suppressed</span>
+                                <span style="color: var(--text-muted);">(Cooldown 10s)</span>
+                            </div>
                         </div>
-                        <span class="sim-sev-tag sev-high">HIGH</span>
-                    </div>
-                    <div class="sim-card-body">
-                        <span class="sim-name">TCP SYN Flood</span>
-                        <span class="sim-desc">120 gói SYN DoS dồn dập</span>
-                    </div>
-                </button>
 
-                <!-- Trigger 3: UDP Flood -->
-                <button id="btnSimUdp" class="sim-card card-amber" title="Phát 100 gói UDP tới cổng 9999">
-                    <div class="sim-card-top">
-                        <div class="sim-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M2 12h5l3 7 4-14 3 7h5"></path>
-                            </svg>
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-top">
+                                <span class="kpi-label">Card mạng & Uptime</span>
+                                <span class="kpi-tag" id="valActiveIface">Loopback</span>
+                            </div>
+                            <div class="kpi-value-row">
+                                <span class="kpi-big-num font-mono tabular-nums" id="valUptime">00:00:00</span>
+                            </div>
+                            <div class="kpi-tile-bottom">
+                                <span>Thời gian hoạt động liên tục</span>
+                            </div>
                         </div>
-                        <span class="sim-sev-tag sev-medium">MEDIUM</span>
-                    </div>
-                    <div class="sim-card-body">
-                        <span class="sim-name">UDP Flood</span>
-                        <span class="sim-desc">100 gói UDP burst nghẽn mạng</span>
-                    </div>
-                </button>
 
-                <!-- Trigger 4: ICMP Flood -->
-                <button id="btnSimIcmp" class="sim-card card-sky" title="Phát 60 gói ICMP Ping Flood">
-                    <div class="sim-card-top">
-                        <div class="sim-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"></path>
-                                <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"></path>
-                                <circle cx="12" cy="12" r="2"></circle>
-                                <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"></path>
-                                <path d="M19.1 4.9C23 8.8 23 15.2 19.1 19.1"></path>
-                            </svg>
-                        </div>
-                        <span class="sim-sev-tag sev-medium">MEDIUM</span>
-                    </div>
-                    <div class="sim-card-body">
-                        <span class="sim-name">ICMP Ping Flood</span>
-                        <span class="sim-desc">60 gói ping echo request</span>
-                    </div>
-                </button>
-
-                <!-- Trigger 5: Normal Traffic -->
-                <button id="btnSimNormal" class="sim-card card-emerald" title="Phát 15 gói tin bình thường tới cổng 8080 (Negative Test)">
-                    <div class="sim-card-top">
-                        <div class="sim-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                                <polyline points="9 12 11 14 15 10"></polyline>
-                            </svg>
-                        </div>
-                        <span class="sim-sev-tag sev-safe">NEGATIVE TEST</span>
-                    </div>
-                    <div class="sim-card-body">
-                        <span class="sim-name">Normal Web Traffic</span>
-                        <span class="sim-desc">15 gói HTTP 8080 (0 Alert)</span>
-                    </div>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================================================================= -->
-        <!-- 3. Key Telemetry Metrics Grid (4 KPI Cards)                        -->
-        <!-- ================================================================= -->
-        <section class="kpi-grid">
-            <!-- Metric 1: Packets & Throughput -->
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">GÓI TIN QUAN SÁT</span>
-                    <div class="kpi-icon-pill icon-cyan">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                        </svg>
-                    </div>
-                </div>
-                <div class="kpi-value-row">
-                    <span class="kpi-number" id="valTotalPackets">0</span>
-                </div>
-                <div class="kpi-footer">
-                    <div class="kpi-sub-pill pill-cyan">
-                        <span class="live-pulse-dot"></span>
-                        <span id="valThroughput">0.0 pps</span>
-                    </div>
-                    <span class="kpi-caption">Tốc độ lưu lượng tức thời</span>
-                </div>
-            </div>
-
-            <!-- Metric 2: Threats & Cooldown -->
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">CẢNH BÁO XÂM NHẬP</span>
-                    <div class="kpi-icon-pill icon-rose">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                            <line x1="12" y1="9" x2="12" y2="13"></line>
-                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                        </svg>
-                    </div>
-                </div>
-                <div class="kpi-value-row">
-                    <span class="kpi-number text-crimson" id="valTotalAlerts">0</span>
-                </div>
-                <div class="kpi-footer">
-                    <div class="kpi-sub-pill pill-rose" title="Cơ chế Cooldown 10s tự động kìm hãm các cảnh báo trùng lặp để chống spam">
-                        <span id="valSuppressedAlerts">0 suppressed</span>
-                    </div>
-                    <span class="kpi-caption">Chống spam (Cooldown 10s)</span>
-                </div>
-            </div>
-
-            <!-- Metric 3: Uptime & Active Card -->
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">THỜI GIAN HOẠT ĐỘNG</span>
-                    <div class="kpi-icon-pill icon-emerald">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
-                    </div>
-                </div>
-                <div class="kpi-value-row">
-                    <span class="kpi-number font-mono" id="valUptime">00:00:00</span>
-                </div>
-                <div class="kpi-footer">
-                    <div class="kpi-sub-pill pill-emerald">
-                        <span id="valActiveIface">Loopback</span>
-                    </div>
-                    <span class="kpi-caption">Card mạng đang bắt</span>
-                </div>
-            </div>
-
-            <!-- Metric 4: Buffer & Queue Health -->
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">SỨC KHỎE HÀNG ĐỢI</span>
-                    <div class="kpi-icon-pill icon-amber">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
-                    </div>
-                </div>
-                <div class="kpi-value-row">
-                    <div class="queue-metric-wrap">
-                        <span class="kpi-number text-amber" id="valQueuePercent">0%</span>
-                        <div class="queue-track">
-                            <div class="queue-fill" id="queueProgressBar" style="width: 0%;"></div>
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-top">
+                                <span class="kpi-label">Sức khỏe hàng đợi</span>
+                                <span class="kpi-tag" id="valDroppedPackets">0 drop</span>
+                            </div>
+                            <div class="kpi-value-row">
+                                <span class="kpi-big-num tabular-nums" id="valQueuePercentSub">0%</span>
+                            </div>
+                            <div class="kpi-tile-bottom">
+                                <span>Bộ đệm kernel: Bounded 10,000</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="kpi-footer">
-                    <div class="kpi-sub-pill pill-amber">
-                        <span id="valDroppedPackets">0 drop</span>
-                    </div>
-                    <span class="kpi-caption">Bộ đệm: <strong id="valQueueRaw">0 / 10,000</strong></span>
-                </div>
-            </div>
-        </section>
 
-        <!-- ================================================================= -->
-        <!-- 4. Visualizations & Analytical Charts                              -->
-        <!-- ================================================================= -->
-        <section class="charts-layout">
-            <!-- Chart 1: Real-Time Throughput Trend -->
-            <div class="chart-panel panel-throughput">
-                <div class="panel-header">
-                    <div class="panel-title-wrap">
-                        <div class="panel-badge-row">
-                            <h3>Lưu lượng mạng thời gian thực (Throughput Trend)</h3>
-                            <span class="tag-live">● LIVE FEED (1.5s)</span>
+                    <!-- Analytics Split (70% Throughput Trend + 30% Protocol Donut) -->
+                    <div class="analytics-split">
+                        <div class="soc-panel">
+                            <div class="panel-head">
+                                <span class="panel-title">Lưu lượng mạng thời gian thực (Throughput Trend)</span>
+                                <span class="panel-meta-tag">LIVE FEED (1.5s)</span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="chart-box-throughput">
+                                    <canvas id="throughputChart"></canvas>
+                                </div>
+                            </div>
                         </div>
-                        <span class="panel-subtitle">Số lượng gói tin xử lý mỗi giây (Packets per second) từ Npcap Pipeline</span>
-                    </div>
-                </div>
-                <div class="chart-canvas-container">
-                    <canvas id="throughputChart"></canvas>
-                </div>
-            </div>
 
-            <!-- Chart 2: Protocol Distribution Donut -->
-            <div class="chart-panel panel-protocol">
-                <div class="panel-header">
-                    <div class="panel-title-wrap">
-                        <h3>Phân bố Giao thức Mạng</h3>
-                        <span class="panel-subtitle">Tỷ trọng lưu lượng TCP, UDP, ICMP</span>
+                        <div class="soc-panel">
+                            <div class="panel-head">
+                                <span class="panel-title">Phân bố giao thức</span>
+                                <span class="panel-meta-tag">L4 Protocol</span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="chart-box-protocol">
+                                    <canvas id="protocolChart"></canvas>
+                                </div>
+                                <table class="protocol-table-clean">
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="proto-legend-dot dot-tcp"></span>TCP</td>
+                                            <td style="text-align: right; font-family: var(--font-mono);" id="protoCountTcp" class="tabular-nums">0 (0%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="proto-legend-dot dot-udp"></span>UDP</td>
+                                            <td style="text-align: right; font-family: var(--font-mono);" id="protoCountUdp" class="tabular-nums">0 (0%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="proto-legend-dot dot-icmp"></span>ICMP</td>
+                                            <td style="text-align: right; font-family: var(--font-mono);" id="protoCountIcmp" class="tabular-nums">0 (0%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="proto-legend-dot dot-other"></span>Khác</td>
+                                            <td style="text-align: right; font-family: var(--font-mono);" id="protoCountOther" class="tabular-nums">0 (0%)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="chart-donut-container">
-                    <canvas id="protocolChart"></canvas>
-                </div>
-                <!-- Interactive Protocol Summary Legend -->
-                <div class="protocol-legend-grid">
-                    <div class="proto-badge badge-tcp">
-                        <span class="proto-dot dot-tcp"></span>
-                        <span class="proto-label">TCP</span>
-                        <span class="proto-count" id="protoCountTcp">0 (0%)</span>
-                    </div>
-                    <div class="proto-badge badge-udp">
-                        <span class="proto-dot dot-udp"></span>
-                        <span class="proto-label">UDP</span>
-                        <span class="proto-count" id="protoCountUdp">0 (0%)</span>
-                    </div>
-                    <div class="proto-badge badge-icmp">
-                        <span class="proto-dot dot-icmp"></span>
-                        <span class="proto-label">ICMP</span>
-                        <span class="proto-count" id="protoCountIcmp">0 (0%)</span>
-                    </div>
-                    <div class="proto-badge badge-other">
-                        <span class="proto-dot dot-other"></span>
-                        <span class="proto-label">Khác</span>
-                        <span class="proto-count" id="protoCountOther">0 (0%)</span>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- ================================================================= -->
-        <!-- 5. Intelligence Center & Data Forensics Tabs                       -->
-        <!-- ================================================================= -->
-        <section class="intel-center">
-            <div class="tab-navbar">
-                <div class="tab-pills-row">
-                    <button class="intel-tab-btn tab-btn active" data-tab="tabAlerts">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                        </svg>
-                        <span>Cảnh báo Xâm nhập</span>
-                        <span class="counter-badge" id="alertTabCount">0</span>
-                    </button>
-                    <button class="intel-tab-btn tab-btn" data-tab="tabLogs">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="4 17 10 11 4 5"></polyline>
-                            <line x1="12" y1="19" x2="20" y2="19"></line>
-                        </svg>
-                        <span>Nhật ký Vận hành</span>
-                    </button>
-                    <button class="intel-tab-btn tab-btn" data-tab="tabStorage">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                        </svg>
-                        <span>Quản lý File Log & Lưu trữ</span>
-                    </button>
-                </div>
-
-                <!-- Alert Action Filters -->
-                <div class="tab-tools" id="alertActions">
-                    <div class="search-box">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="text" id="filterSearch" class="search-input" placeholder="Lọc theo địa chỉ IP...">
+                    <!-- Recent Alerts Strip -->
+                    <div class="soc-panel">
+                        <div class="panel-head">
+                            <span class="panel-title">Sự kiện cảnh báo mới nhất</span>
+                            <button class="btn-soc btn-outline" onclick="switchView('view-alerts')">
+                                <span>Xem toàn bộ cảnh báo</span>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="soc-data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 110px;">Thời gian</th>
+                                        <th style="width: 140px;">Mã sự kiện</th>
+                                        <th style="width: 130px;">Hành vi</th>
+                                        <th style="width: 90px;">Mức độ</th>
+                                        <th style="width: 260px;">Nguồn &rarr; Đích</th>
+                                        <th>Mô tả chi tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="overviewRecentAlertsBody">
+                                    <tr class="empty-state-row">
+                                        <td colspan="6">Hệ thống an toàn. Chưa phát hiện hành vi xâm nhập nào.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="filter-box">
-                        <select id="filterSeverity" class="custom-select filter-select">
-                            <option value="ALL">Mọi mức độ</option>
-                            <option value="HIGH">Chỉ HIGH</option>
-                            <option value="MEDIUM">Chỉ MEDIUM</option>
-                            <option value="LOW">Chỉ LOW</option>
-                        </select>
-                    </div>
-                    <button id="btnClearAlerts" class="btn btn-danger-outline" title="Làm sạch toàn bộ bản ghi cảnh báo trong bảng">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                        <span>Xóa lịch sử</span>
-                    </button>
-                </div>
+                </section>
 
-                <!-- Log Action Filters -->
-                <div class="tab-tools" id="logActions" style="display: none;">
-                    <div class="filter-box">
-                        <select id="filterLogLevel" class="custom-select filter-select">
-                            <option value="ALL">Mọi cấp độ</option>
-                            <option value="INFO">Chỉ INFO</option>
-                            <option value="WARNING">Chỉ WARNING</option>
-                            <option value="ERROR">Chỉ ERROR</option>
-                        </select>
+                <!-- --------------------------------------------------------- -->
+                <!-- VIEW 2: LƯU LƯỢNG MẠNG (TRAFFIC ANALYTICS)                -->
+                <!-- --------------------------------------------------------- -->
+                <section class="soc-view" id="view-traffic">
+                    <div class="soc-panel">
+                        <div class="panel-head">
+                            <span class="panel-title">Biểu đồ giám sát lưu lượng gói tin (PPS History)</span>
+                            <span class="panel-meta-tag">NPcap NDIS 6</span>
+                        </div>
+                        <div class="panel-body">
+                            <div style="height: 320px; width: 100%;">
+                                <canvas id="trafficExpandedChart"></canvas>
+                            </div>
+                        </div>
                     </div>
-                    <button id="btnRefreshLogs" class="btn btn-ghost">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 4v6h-6"></path>
-                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                        </svg>
-                        <span>Làm mới log</span>
-                    </button>
-                </div>
-            </div>
 
-            <!-- Tab Content 1: Alerts Table -->
-            <div class="intel-tab-content tab-content active" id="tabAlerts">
-                <div class="table-container">
-                    <table class="modern-table" id="alertsTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 100px;">Thời điểm</th>
-                                <th style="width: 160px;">Mã Alert</th>
-                                <th style="width: 140px;">Loại hành vi</th>
-                                <th style="width: 110px;">Mức độ</th>
-                                <th style="width: 150px;">IP Nguồn</th>
-                                <th style="width: 150px;">IP Đích</th>
-                                <th>Mô tả chi tiết vi phạm</th>
-                                <th style="width: 120px; text-align: center;">Bằng chứng</th>
-                            </tr>
-                        </thead>
-                        <tbody id="alertsTableBody">
-                            <tr>
-                                <td colspan="8" class="empty-table-state">
-                                    <div class="empty-state-wrap">
-                                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                            <polyline points="9 12 11 14 15 10"></polyline>
-                                        </svg>
-                                        <span>Hệ thống an toàn. Chưa phát hiện hành vi xâm nhập nào.</span>
+                    <div class="settings-matrix-grid">
+                        <div class="settings-card">
+                            <h4>Thống kê chi tiết theo tầng giao thức</h4>
+                            <div class="param-list">
+                                <div class="param-item">
+                                    <span class="param-name">Giao thức TCP (Transmission Control Protocol):</span>
+                                    <span class="param-val" id="trafficDetailTcp">0 pkts</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Giao thức UDP (User Datagram Protocol):</span>
+                                    <span class="param-val" id="trafficDetailUdp">0 pkts</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Giao thức ICMP (Internet Control Message Protocol):</span>
+                                    <span class="param-val" id="trafficDetailIcmp">0 pkts</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Các giao thức khác (IPv6, ARP, IGMP...):</span>
+                                    <span class="param-val" id="trafficDetailOther">0 pkts</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>Trạng thái thu thập dữ liệu (Packet Sniffer Health)</h4>
+                            <div class="param-list">
+                                <div class="param-item">
+                                    <span class="param-name">Giao diện mạng đang chọn:</span>
+                                    <span class="param-val" id="trafficDetailIface">-</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Dung lượng bộ đệm RAM (Queue size):</span>
+                                    <span class="param-val" id="trafficDetailQueue">0 / 10,000 pkts</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Gói tin bị đánh rơi (Dropped packets):</span>
+                                    <span class="param-val" id="trafficDetailDropped">0 drop</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Cơ chế quản lý bộ nhớ:</span>
+                                    <span class="param-val">Scapy Async (store=False)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- --------------------------------------------------------- -->
+                <!-- VIEW 3: CẢNH BÁO XÂM NHẬP (ALERTS)                        -->
+                <!-- --------------------------------------------------------- -->
+                <section class="soc-view" id="view-alerts">
+                    <div class="soc-panel">
+                        <!-- Toolbar Filter -->
+                        <div class="table-toolbar">
+                            <div class="toolbar-left">
+                                <input type="text" id="filterSearch" class="search-input-flat" placeholder="Lọc theo địa chỉ IP...">
+                                <select id="filterSeverity" class="select-flat" style="background: var(--bg-app); border: 1px solid var(--border-subtle); padding: 5px 8px; border-radius: var(--radius-sm);">
+                                    <option value="ALL">Mọi mức độ</option>
+                                    <option value="HIGH">Chỉ HIGH (Critical)</option>
+                                    <option value="MEDIUM">Chỉ MEDIUM (Warning)</option>
+                                    <option value="LOW">Chỉ LOW (Info)</option>
+                                </select>
+                            </div>
+                            <div class="toolbar-right">
+                                <button id="btnRefreshAlerts" class="btn-soc btn-outline" title="Làm mới danh sách">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                    </svg>
+                                    <span>Làm mới</span>
+                                </button>
+                                <button id="btnClearAlerts" class="btn-soc btn-outline-danger" title="Xóa toàn bộ bản ghi cảnh báo trong bảng và file log">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    <span>Xóa lịch sử</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Alerts Table -->
+                        <div class="table-responsive">
+                            <table class="soc-data-table" id="alertsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 110px;">Thời gian</th>
+                                        <th style="width: 140px;">Mã Alert</th>
+                                        <th style="width: 130px;">Hành vi</th>
+                                        <th style="width: 90px;">Mức độ</th>
+                                        <th style="width: 140px;">IP Nguồn</th>
+                                        <th style="width: 140px;">IP Đích</th>
+                                        <th>Mô tả chi tiết vi phạm</th>
+                                        <th style="width: 80px; text-align: center;">Hồ sơ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alertsTableBody">
+                                    <tr class="empty-state-row">
+                                        <td colspan="8">Chưa phát hiện hành vi xâm nhập nào.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- --------------------------------------------------------- -->
+                <!-- VIEW 4: NHẬT KÝ HỆ THỐNG (SYSTEM LOGS)                    -->
+                <!-- --------------------------------------------------------- -->
+                <section class="soc-view" id="view-logs">
+                    <div class="soc-panel">
+                        <div class="table-toolbar">
+                            <div class="toolbar-left">
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Mức log:</span>
+                                <select id="filterLogLevel" class="select-flat" style="background: var(--bg-app); border: 1px solid var(--border-subtle); padding: 5px 8px; border-radius: var(--radius-sm);">
+                                    <option value="ALL">Mọi cấp độ</option>
+                                    <option value="INFO">Chỉ INFO</option>
+                                    <option value="WARNING">Chỉ WARNING</option>
+                                    <option value="ERROR">Chỉ ERROR</option>
+                                </select>
+                            </div>
+                            <div class="toolbar-right">
+                                <button id="btnRefreshLogs" class="btn-soc btn-outline">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                    </svg>
+                                    <span>Làm mới log</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="panel-body" style="padding: 10px;">
+                            <div class="terminal-clean" id="systemLogConsole">
+                                <div class="log-line text-muted">[Sẵn sàng] Đang tải nhật ký vận hành logs/system.log...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- --------------------------------------------------------- -->
+                <!-- VIEW 5: QUẢN LÝ TỆP LOG (STORAGE)                         -->
+                <!-- --------------------------------------------------------- -->
+                <section class="soc-view" id="view-storage">
+                    <div class="kpi-strip" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-top">
+                                <span class="kpi-label">Dung lượng thư mục logs/</span>
+                            </div>
+                            <div class="kpi-value-row">
+                                <span class="kpi-big-num tabular-nums" id="storageTotalMb">0.0 MB</span>
+                            </div>
+                            <div class="kpi-tile-bottom">
+                                <span>Giới hạn an toàn: <strong id="storageMaxMb">100 MB</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-top">
+                                <span class="kpi-label">Chính sách lưu trữ (Retention)</span>
+                            </div>
+                            <div class="kpi-value-row">
+                                <span class="kpi-big-num tabular-nums" id="storageRetentionDays">90 ngày</span>
+                            </div>
+                            <div class="kpi-tile-bottom">
+                                <span>Xoay vòng: 5 MB/file (Tối đa 5 backups)</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-tile" style="justify-content: center; align-items: flex-start;">
+                            <span class="kpi-label" style="margin-bottom: 8px;">Bảo trì thủ công</span>
+                            <button id="btnTriggerCleanup" class="btn-soc btn-outline" style="width: 100%; justify-content: center;">
+                                <span>Dọn dẹp file cũ (>90 ngày)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="soc-panel">
+                        <div class="panel-head">
+                            <span class="panel-title">Danh sách tệp tin nhật ký trong thư mục logs/</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="soc-data-table" id="storageFilesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Tên file</th>
+                                        <th style="width: 160px;">Dung lượng</th>
+                                        <th style="width: 220px;">Thời điểm sửa đổi gần nhất</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="storageFilesBody">
+                                    <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Đang nạp thông tin tệp...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- --------------------------------------------------------- -->
+                <!-- VIEW 6: PHÒNG KIỂM THỬ (SIMULATION LAB)                   -->
+                <!-- --------------------------------------------------------- -->
+                <section class="soc-view" id="view-simulation">
+                    <div class="soc-panel">
+                        <div class="panel-head">
+                            <span class="panel-title">Phòng kiểm thử lưu lượng & Xác minh luật phát hiện (Verification Studio)</span>
+                            <span class="panel-meta-tag">LOOPBACK 127.0.0.1</span>
+                        </div>
+                        <div class="panel-body">
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 16px;">
+                                Sử dụng socket chuẩn của hệ điều hành Windows để phát lưu lượng có kiểm soát qua card Loopback.
+                                Giúp sinh viên và hội đồng kiểm chứng độ nhạy của 4 luật phát hiện (Positive Test) và kiểm tra tính không báo nhầm (Negative Test).
+                            </p>
+
+                            <div class="sim-grid">
+                                <!-- Scenario 1: Port Scan -->
+                                <div class="sim-tile">
+                                    <div class="sim-tile-top">
+                                        <span class="sim-title">1. TCP Port Scan</span>
+                                        <span class="badge-threat badge-threat-high">HIGH</span>
                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                    <p class="sim-desc">Gửi 25 gói TCP SYN tới 25 cổng đích khác nhau trong 5 giây.</p>
+                                    <div class="sim-btn-row">
+                                        <button id="btnSimScan" class="btn-soc btn-outline">Kích hoạt Port Scan</button>
+                                    </div>
+                                </div>
 
-            <!-- Tab Content 2: System Terminal Logs -->
-            <div class="intel-tab-content tab-content" id="tabLogs">
-                <div class="terminal-card">
-                    <div class="terminal-titlebar">
-                        <div class="window-controls">
-                            <span class="control-dot close"></span>
-                            <span class="control-dot minimize"></span>
-                            <span class="control-dot zoom"></span>
-                        </div>
-                        <span class="terminal-file-name">logs/system.log • Live Event Stream</span>
-                        <div class="terminal-status-tag">ACTIVE LOG FILE</div>
-                    </div>
-                    <div class="terminal-viewport" id="systemLogConsole">
-                        <div class="log-line text-muted">[Sẵn sàng] Đang kết nối dòng nhật ký vận hành...</div>
-                    </div>
-                </div>
-            </div>
+                                <!-- Scenario 2: SYN Flood -->
+                                <div class="sim-tile">
+                                    <div class="sim-tile-top">
+                                        <span class="sim-title">2. TCP SYN Flood</span>
+                                        <span class="badge-threat badge-threat-high">HIGH</span>
+                                    </div>
+                                    <p class="sim-desc">Bơm 120 gói TCP SYN liên tục tới cổng 80 (tốc độ ~60 SYN/s).</p>
+                                    <div class="sim-btn-row">
+                                        <button id="btnSimSyn" class="btn-soc btn-outline">Kích hoạt SYN Flood</button>
+                                    </div>
+                                </div>
 
-            <!-- Tab Content 3: Storage & Log Retention -->
-            <div class="intel-tab-content tab-content" id="tabStorage">
-                <div class="storage-view">
-                    <div class="storage-cards-grid">
-                        <div class="storage-info-box">
-                            <span class="storage-label">DUNG LƯỢNG THỰC TẾ</span>
-                            <div class="storage-number-row">
-                                <span class="storage-big-val" id="storageTotalMb">0.0 MB</span>
-                                <span class="storage-sub">/ tối đa <strong id="storageMaxMb">100 MB</strong></span>
+                                <!-- Scenario 3: UDP Flood -->
+                                <div class="sim-tile">
+                                    <div class="sim-tile-top">
+                                        <span class="sim-title">3. UDP Flood</span>
+                                        <span class="badge-threat badge-threat-medium">MEDIUM</span>
+                                    </div>
+                                    <p class="sim-desc">Bắn 100 datagram UDP tới cổng 9999 (tốc độ ~50 UDP/s).</p>
+                                    <div class="sim-btn-row">
+                                        <button id="btnSimUdp" class="btn-soc btn-outline">Kích hoạt UDP Flood</button>
+                                    </div>
+                                </div>
+
+                                <!-- Scenario 4: ICMP Flood -->
+                                <div class="sim-tile">
+                                    <div class="sim-tile-top">
+                                        <span class="sim-title">4. ICMP Ping Flood</span>
+                                        <span class="badge-threat badge-threat-medium">MEDIUM</span>
+                                    </div>
+                                    <p class="sim-desc">Bắn 60 gói ICMP Echo Request dồn dập (tốc độ ~30 ICMP/s).</p>
+                                    <div class="sim-btn-row">
+                                        <button id="btnSimIcmp" class="btn-soc btn-outline">Kích hoạt ICMP Flood</button>
+                                    </div>
+                                </div>
+
+                                <!-- Scenario 5: Normal Web Traffic -->
+                                <div class="sim-tile">
+                                    <div class="sim-tile-top">
+                                        <span class="sim-title">5. Normal Web Traffic</span>
+                                        <span class="badge-threat" style="color: #3fb950; border-color: rgba(59, 185, 80, 0.4);">NEGATIVE TEST</span>
+                                    </div>
+                                    <p class="sim-desc">Gửi 15 kết nối tới cùng cổng 8080 (Negative Test &rarr; 0 cảnh báo).</p>
+                                    <div class="sim-btn-row">
+                                        <button id="btnSimNormal" class="btn-soc btn-outline">Kích hoạt Normal Web</button>
+                                    </div>
+                                </div>
                             </div>
-                            <span class="storage-hint">Dung lượng tổng thư mục logs/</span>
                         </div>
-                        <div class="storage-info-box">
-                            <span class="storage-label">CHÍNH SÁCH RETENTION & QUOTA</span>
-                            <div class="storage-policy-list">
-                                <p>• Giới hạn 1 file: <strong>5.0 MB</strong> (Tối đa 5 file backup .1 ... .5)</p>
-                                <p>• Thời hạn lưu trữ: <strong id="storageRetentionDays">90 ngày</strong></p>
+                    </div>
+                </section>
+
+                <!-- --------------------------------------------------------- -->
+                <!-- VIEW 7: CẤU HÌNH & NGƯỠNG (SETTINGS)                      -->
+                <!-- --------------------------------------------------------- -->
+                <section class="soc-view" id="view-settings">
+                    <div class="settings-matrix-grid">
+                        <div class="settings-card">
+                            <h4>Quy chuẩn Ngưỡng Luật Phát hiện (Detection Rules)</h4>
+                            <div class="param-list">
+                                <div class="param-item">
+                                    <span class="param-name">Cửa sổ trượt thời gian (Sliding Window):</span>
+                                    <span class="param-val">5.0 giây</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Ngưỡng quét cổng (Port Scan Threshold):</span>
+                                    <span class="param-val">&ge; 15 cổng khác nhau</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Ngưỡng SYN Flood (SYN Rate Threshold):</span>
+                                    <span class="param-val">&ge; 100 gói SYN (Tỷ lệ SYN/ACK &gt; 3.0)</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Ngưỡng UDP Flood (UDP Rate Threshold):</span>
+                                    <span class="param-val">&ge; 80 gói UDP</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Ngưỡng ICMP Ping Flood:</span>
+                                    <span class="param-val">&ge; 40 gói Echo Request</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="storage-info-box">
-                            <span class="storage-label">BẢO TRÌ ĐỊNH KỲ</span>
-                            <p class="storage-policy-desc">Tự động quét và xóa bỏ các file sao lưu .1, .2 đã quá hạn 90 ngày hoặc khi đầy đĩa.</p>
-                            <button id="btnTriggerCleanup" class="btn btn-emerald btn-sm">Dọn dẹp file cũ ngay</button>
+
+                        <div class="settings-card">
+                            <h4>Cấu hình Quản lý Cảnh báo & Lưu trữ (Alert & Storage)</h4>
+                            <div class="param-list">
+                                <div class="param-item">
+                                    <span class="param-name">Thời gian kìm hãm chống spam (Cooldown):</span>
+                                    <span class="param-val">10.0 giây / IP / Loại đòn</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Bộ đệm cảnh báo RAM gần nhất:</span>
+                                    <span class="param-val">200 bản ghi</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Giới hạn xoay vòng file (Max bytes/file):</span>
+                                    <span class="param-val">5 MB (5,242,880 bytes)</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Số file backup tối đa (Backup count):</span>
+                                    <span class="param-val">5 tệp (.1 ... .5)</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Thời hạn lưu trữ log tối đa (Retention):</span>
+                                    <span class="param-val">90 ngày</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">Giới hạn dung lượng toàn thư mục logs/:</span>
+                                    <span class="param-val">100 MB</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="storage-table-wrap">
-                        <h4>Danh sách tệp tin nhật ký trong thư mục <code>logs/</code></h4>
-                        <table class="modern-table" id="storageFilesTable">
-                            <thead>
-                                <tr>
-                                    <th>Tên file</th>
-                                    <th>Dung lượng (KB)</th>
-                                    <th>Thời điểm cập nhật gần nhất</th>
-                                </tr>
-                            </thead>
-                            <tbody id="storageFilesBody">
-                                <tr><td colspan="3" class="text-center">Đang nạp danh sách file...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================================================================= -->
-        <!-- 6. Forensic Evidence Modal (Chi tiết Bằng chứng)                   -->
-        <!-- ================================================================= -->
-        <div class="evidence-modal-overlay" id="alertModal">
-            <div class="evidence-modal-box">
-                <div class="modal-top">
-                    <div class="modal-title-wrap">
-                        <div class="modal-icon-badge">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 id="modalAlertTitle">Hồ sơ Bằng chứng Xâm nhập</h3>
-                            <span class="modal-subtitle">Dữ liệu phân tích điều tra số (Forensic Evidence Data)</span>
-                        </div>
-                    </div>
-                    <button class="modal-close-icon" id="btnModalClose">&times;</button>
-                </div>
-
-                <div class="modal-body-content">
-                    <div class="meta-data-grid">
-                        <div class="meta-item">
-                            <span class="meta-label">MÃ SỰ KIỆN:</span>
-                            <span class="meta-val font-mono" id="modalAlertId">-</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">THỜI ĐIỂM XẢY RA:</span>
-                            <span class="meta-val font-mono" id="modalAlertTime">-</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">HƯỚNG TẤN CÔNG (IP):</span>
-                            <span class="meta-val font-mono" id="modalAlertIp">-</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">HÀNH VI PHÁT HIỆN:</span>
-                            <span class="meta-val text-crimson" id="modalAlertDesc">-</span>
-                        </div>
-                    </div>
-
-                    <div class="evidence-json-wrap">
-                        <span class="json-header-tag">BẰNG CHỨNG KỸ THUẬT (RAW EVIDENCE JSON):</span>
-                        <pre class="json-terminal" id="modalAlertEvidence"></pre>
-                    </div>
-                </div>
-
-                <div class="modal-footer-actions">
-                    <button class="btn btn-ghost" id="btnModalDismiss">Đóng hồ sơ</button>
-                </div>
-            </div>
+                </section>
+            </main>
         </div>
 
+        <!-- ================================================================= -->
+        <!-- 4. Slide-over Forensic Inspector Drawer                           -->
+        <!-- ================================================================= -->
+        <div class="drawer-backdrop" id="alertModalBackdrop"></div>
+        <aside class="drawer-panel" id="alertModal">
+            <div class="drawer-header">
+                <span class="drawer-title" id="modalAlertTitle">Hồ sơ Bằng chứng Xâm nhập</span>
+                <button class="drawer-close-btn" id="btnModalClose">&times;</button>
+            </div>
+            
+            <div class="drawer-body">
+                <table class="drawer-meta-table">
+                    <tbody>
+                        <tr>
+                            <td>MÃ SỰ KIỆN:</td>
+                            <td><code id="modalAlertId">-</code></td>
+                        </tr>
+                        <tr>
+                            <td>THỜI ĐIỂM:</td>
+                            <td id="modalAlertTime">-</td>
+                        </tr>
+                        <tr>
+                            <td>HƯỚNG TẤN CÔNG:</td>
+                            <td><code id="modalAlertIp">-</code></td>
+                        </tr>
+                        <tr>
+                            <td>HÀNH VI PHÁT HIỆN:</td>
+                            <td id="modalAlertDesc" style="color: #f85149; font-weight: 600;">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div>
+                    <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                        Dữ liệu Bằng chứng gốc (Raw Evidence JSON):
+                    </span>
+                    <pre class="raw-evidence-box" id="modalAlertEvidence"></pre>
+                </div>
+            </div>
+
+            <div class="drawer-footer">
+                <button class="btn-soc btn-outline" id="btnModalDismiss">Đóng hồ sơ</button>
+            </div>
+        </aside>
+
         <!-- Global Toast Container -->
-        <div class="toast-hub" id="toastContainer"></div>
+        <div class="toast-container" id="toastContainer"></div>
     </div>
 
     <!-- Application Script -->
